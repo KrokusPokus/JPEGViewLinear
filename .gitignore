@@ -1,0 +1,40 @@
+.vs/
+**/obj
+**/Debug
+**/Release
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+*.pch
+
+*.tlog
+
+*.dll
+*.ilk
+*.exp
+*.exe
+
+*.filters
+*.user
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.suo
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
