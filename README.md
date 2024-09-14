@@ -5,8 +5,8 @@ It also incorporates some of the fixes from the more recent fork by Kevin M at h
 
 ## Differences to the original version
 
-* Abiliy to up- and downsamples images in linear space when using SSE2.
-* The available downsampling filters have been changed to offer the well known 'Hermite', 'Mitchell', 'Catrom' and 'Lanczos2'.
+* Abiliy to up- and downsample images in linear space when using SSE2.
+* The available downsampling filters have been changed to offer the well known 'Hermite', 'Mitchell', 'Catrom' and 'Lanczos2' and give reference output identical to ImageMagick.
 * Any image editing functionality has been removed. JPEGViewLinear is a pure viewer, focusing on speed and maximum image quality.
 
 ## Why?
@@ -20,5 +20,5 @@ JPEG, PNG, WEBP, GIF, BMP, TIFF.
 
 ## System Requirements
 
-64-bit Windows OS
-CPU with SSE2.
+* 64-bit Windows OS
+* CPU with SSE2
