@@ -2805,8 +2805,11 @@ LPCTSTR CMainDlg::CurrentFileName()
 
 void CMainDlg::UpdateWindowTitle()
 	{
-	static HICON hIconBig = NULL;
-	static HICON hIconSmall = NULL;
+	static HICON hIconBigPrevious = NULL;
+	static HICON hIconSmallPrevious = NULL;
+	HICON hIconBig = NULL;
+	HICON hIconSmall = NULL;
+	SHFILEINFO shfi;
 
 	LPCTSTR sCurrentFileName = CurrentFileName();
 
@@ -2816,6 +2819,25 @@ void CMainDlg::UpdateWindowTitle()
 			{
 			_stprintf_s(s_PrevTitleText, MAX_PATH, _T("%s"),_T("JPEGView"));
 			this->SetWindowText(_T("JPEGView"));
+
+			hIconBig = (HICON)::LoadImage(::GetModuleHandle(0),MAKEINTRESOURCE(IDR_MAINFRAME),IMAGE_ICON,::GetSystemMetrics(SM_CXICON),::GetSystemMetrics(SM_CYICON),LR_VGACOLOR);
+			hIconSmall = (HICON)::LoadImage(::GetModuleHandle(0),MAKEINTRESOURCE(IDR_MAINFRAME),IMAGE_ICON,::GetSystemMetrics(SM_CXSMICON),::GetSystemMetrics(SM_CYSMICON),LR_VGACOLOR);
+
+			if (hIconBig != NULL)
+				::SendMessage(CMainDlg::m_hWnd,WM_SETICON,ICON_BIG,(LPARAM)hIconBig);
+			if (hIconSmall != NULL)
+				::SendMessage(CMainDlg::m_hWnd,WM_SETICON,ICON_SMALL,(LPARAM)hIconSmall);
+
+			if (hIconBigPrevious != NULL)
+				{
+				DestroyIcon(hIconBigPrevious);
+				hIconBigPrevious = hIconBig;
+				}
+			if (hIconSmallPrevious != NULL)
+				{
+				DestroyIcon(hIconSmallPrevious);
+				hIconSmallPrevious = hIconSmall;
+				}
 			}
 		}
 	else
@@ -2833,75 +2855,17 @@ void CMainDlg::UpdateWindowTitle()
 			{
 			if (*pExt != '\0')
 				{
-				//::OutputDebugStr(_T("UpdateWindowTitle() for "));
-				//::OutputDebugStr(CurrentFileName());
-				//::OutputDebugStr(_T("s_PrevFileExt: "));
-				//::OutputDebugStr(s_PrevFileExt);
-				//::OutputDebugStr(_T("\n"));
-
 				wsprintf(s_PrevFileExt, _T("%s"),pExt);
 
-				if (hIconBig != NULL)
-					{
-					DestroyIcon(hIconBig);
-					hIconBig = NULL;
-					}
-
-				if (hIconSmall != NULL)
-					{
-					DestroyIcon(hIconSmall);
-					hIconSmall = NULL;
-					}
-
-				TCHAR buffer_1[MAX_PATH];
-				::GetModuleFileName(NULL,buffer_1,MAX_PATH);
-				PathRemoveFileSpec(buffer_1);
-				LPTSTR lpStr1;
-				lpStr1 = buffer_1;
-
-				TCHAR buffer_2[] = TEXT("..\\Icons");
-				LPTSTR lpStr2;
-				lpStr2 = buffer_2;
-
-				TCHAR buffer_3[MAX_PATH] = TEXT("");
-				LPTSTR lpStr3;
-				lpStr3 = buffer_3;
-				PathCombine(lpStr3,lpStr1,lpStr2);
-
-				TCHAR buffer_4[1024] = TEXT("");
-				LPTSTR lpStr4;
-				lpStr4 = buffer_4;
-
-				wsprintf(lpStr4,TEXT("%s\\doc_%s.ico"),lpStr3,pExt+1);
-
-				if ((::PathFileExists(lpStr4))&&(m_pCurrentImage != NULL))
-					{
-					hIconBig = (HICON)::LoadImage(NULL,lpStr4,IMAGE_ICON,::GetSystemMetrics(SM_CXICON),::GetSystemMetrics(SM_CYICON),LR_LOADFROMFILE);
-					hIconSmall = (HICON)::LoadImage(NULL,lpStr4,IMAGE_ICON,::GetSystemMetrics(SM_CXSMICON),::GetSystemMetrics(SM_CYSMICON),LR_LOADFROMFILE);
-					}
+				if (SHGetFileInfo(sCurrentFileName,0,&shfi,sizeof(SHFILEINFO),SHGFI_ICON))
+					hIconBig = shfi.hIcon;
+				
+				if (SHGetFileInfo(sCurrentFileName,0,&shfi,sizeof(SHFILEINFO),SHGFI_ICON|SHGFI_SMALLICON))
+					hIconSmall = shfi.hIcon;
 				}
 			else
 				{
-				//::OutputDebugStr(_T("UpdateWindowTitle() for "));
-				//::OutputDebugStr(CurrentFileName());
-				//::OutputDebugStr(_T("s_PrevFileExt: "));
-				//::OutputDebugStr(s_PrevFileExt);
-				//::OutputDebugStr(_T("*pExt = '\0'"));
-				//::OutputDebugStr(_T("\n"));
-
 				*s_PrevFileExt = '\0';
-
-				if (hIconBig != NULL)
-					{
-					DestroyIcon(hIconBig);
-					hIconBig = NULL;
-					}
-
-				if (hIconSmall != NULL)
-					{
-					DestroyIcon(hIconSmall);
-					hIconSmall = NULL;
-					}
 				}
 
 			if (hIconBig == NULL)
@@ -2913,6 +2877,17 @@ void CMainDlg::UpdateWindowTitle()
 				::SendMessage(CMainDlg::m_hWnd,WM_SETICON,ICON_BIG,(LPARAM)hIconBig);
 			if (hIconSmall != NULL)
 				::SendMessage(CMainDlg::m_hWnd,WM_SETICON,ICON_SMALL,(LPARAM)hIconSmall);
+
+			if (hIconBigPrevious != NULL)
+				{
+				DestroyIcon(hIconBigPrevious);
+				hIconBigPrevious = hIconBig;
+				}
+			if (hIconSmallPrevious != NULL)
+				{
+				DestroyIcon(hIconSmallPrevious);
+				hIconSmallPrevious = hIconSmall;
+				}
 			}
 		}
 	}
